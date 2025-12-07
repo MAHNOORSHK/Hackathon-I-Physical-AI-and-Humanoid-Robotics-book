@@ -1,1 +1,17 @@
+# Node.js
+node_modules/
+.docusaurus/
+build/
 .env
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Others
+*.log
+*.swp
