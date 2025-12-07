@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+openai
+qdrant-client
+psycopg2-binary
+python-dotenv
+pydantic-settings
+httpx
+langchain
+python-jose[cryptography]
+passlib[bcrypt]

@@ -1,0 +1,66 @@
+/**
+ * Any CSS rules here will be applied to the entire Docusaurus site.
+ */
+
+/* For information on how to customize the button to switch themes, see below:
+ * https://github.com/docusaurus/docusaurus/blob/main/packages/docusaurus-theme-classic/src/theme/Toggle/styles.module.css
+ */
+
+:root {
+  --ifm-color-primary: #212B36; /* A deep blue-grey for a professional look */
+  --ifm-color-primary-dark: #1C242D;
+  --ifm-color-primary-darker: #1A2128;
+  --ifm-color-primary-darkest: #171D22;
+  --ifm-color-primary-light: #26323E;
+  --ifm-color-primary-lighter: #293644;
+  --ifm-color-primary-lightest: #303F4E;
+}
+
+/* Custom dark theme adjustments */
+html[data-theme='dark'] {
+  --ifm-color-emphasis-100: #f5f6f7; /* Very light gray for text */
+  --ifm-color-emphasis-200: #ebedef;
+  --ifm-color-emphasis-300: #e1e4e8;
+  --ifm-color-emphasis-400: #d7dae0;
+  --ifm-color-emphasis-500: #ced2d8;
+  --ifm-color-emphasis-600: #c4c8d0;
+  --ifm-color-emphasis-700: #bac1c8;
+  --ifm-color-emphasis-800: #b0b6c0;
+  --ifm-color-emphasis-900: #a6adbb;
+
+  /* Ensure text is visible in dark mode */
+  color: var(--ifm-font-color-base); /* This usually defaults to a light color in dark theme */
+  --ifm-font-color-base: #FFFFFF; /* Force base font color to white */
+  --ifm-font-color-secondary: #E0E0E0; /* Lighter grey for secondary text */
+  --ifm-background-color: #121212; /* Dark background */
+  --ifm-code-background: #333333; /* Dark background for code blocks */
+  --ifm-navbar-background-color: #1a1a1a; /* Darker navbar */
+  --ifm-footer-background-color: #1a1a1a; /* Darker footer */
+  --ifm-toc-border-color: #333333; /* Border for table of contents */
+  --ifm-heading-color: #FFFFFF; /* Headings also white */
+}
+
+/* Override for specific elements if they still show up dark */
+html[data-theme='dark'] body {
+  color: var(--ifm-font-color-base);
+}
+
+html[data-theme='dark'] h1,
+html[data-theme='dark'] h2,
+html[data-theme='dark'] h3,
+html[data-theme='dark'] h4,
+html[data-theme='dark'] h5,
+html[data-theme='dark'] h6 {
+  color: var(--ifm-heading-color);
+}
+
+html[data-theme='dark'] .navbar__title,
+html[data-theme='dark'] .navbar__link,
+html[data-theme='dark'] .footer__link-item {
+  color: var(--ifm-font-color-base);
+}
+
+/* Ensure 'Login' text is visible in dark mode within Navbar */
+html[data-theme='dark'] .navbar__item.navbar__link {
+  color: var(--ifm-font-color-base);
+}

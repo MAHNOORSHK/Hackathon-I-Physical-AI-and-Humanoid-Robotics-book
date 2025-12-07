@@ -1,0 +1,16 @@
+{
+  // This file is not used to compile JS/TS.
+  // It is used to help the IDE understand the Docusaurus project.
+  "extends": "@tsconfig/docusaurus/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@site/*": ["./*"],
+      "@docusaurus/useBaseUrl": ["./node_modules/@docusaurus/core/lib/client/exports/useBaseUrl"],
+      "@docusaurus/useBaseUrl/*": ["./node_modules/@docusaurus/core/lib/client/exports/useBaseUrl"],
+      "@generated/*": ["./.docusaurus/*"]
+    }
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules", "build", ".docusaurus"]
+}
