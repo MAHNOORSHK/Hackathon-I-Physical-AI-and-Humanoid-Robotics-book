@@ -1,7 +1,7 @@
 import os
 import openai
 from qdrant_client import QdrantClient, models
-from langchain.text_splitter import MarkdownTextSplitter
+from langchain_text_splitters import MarkdownTextSplitter
 
 class IngestionService:
     def __init__(self, openai_api_key: str, qdrant_url: str, qdrant_api_key: str):

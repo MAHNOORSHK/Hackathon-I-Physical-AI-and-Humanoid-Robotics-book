@@ -25,7 +25,7 @@ export default function ChatbotPage(): JSX.Element {
 
   useEffect(scrollToBottom, [messages]);
 
-  const handleSendMessage = useCallback(async (userQuery = input, context = '') => { // Accept query and context as parameters
+  const handleSendMessage = useCallback(async (userQuery = input, context = '') => {
     if (userQuery.trim() === '' && context.trim() === '') return;
 
     const messageToSend = userQuery.trim();
@@ -37,11 +37,6 @@ export default function ChatbotPage(): JSX.Element {
 
     try {
       const token = localStorage.getItem('access_token');
-      if (!token) {
-        setMessages(prev => [...prev, { text: "Please log in to use the chatbot.", sender: 'bot' }]);
-        setIsLoading(false);
-        return;
-      }
 
       let endpoint = '';
       let body = {};
@@ -54,12 +49,18 @@ export default function ChatbotPage(): JSX.Element {
         body = { query: messageToSend };
       }
 
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add auth header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: headers,
         body: JSON.stringify(body),
       });
 
@@ -77,7 +78,7 @@ export default function ChatbotPage(): JSX.Element {
     } finally {
       setIsLoading(false);
     }
-  }, [API_BASE_URL, input, messages, setIsLoading, setMessages, setInput]); // Dependencies for useCallback
+  }, [API_BASE_URL, input]); // Dependencies for useCallback
 
   // Handle contextual query from URL
   useEffect(() => {

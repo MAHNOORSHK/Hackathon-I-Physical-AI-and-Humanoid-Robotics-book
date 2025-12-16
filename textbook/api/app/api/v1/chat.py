@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session # Import Session
-from api.app.services.rag_service import RAGService
-from api.app.core.config import settings
-from api.app.models.chat import ChatRequest, ChatResponse, ContextChatRequest
-from api.app.db.session import get_db # Import get_db
-from api.app.models.chat_db import ChatHistory # Import ChatHistory
+from sqlalchemy.orm import Session
+from app.services.rag_service import RAGService
+from app.core.config import settings
+from app.models.chat import ChatRequest, ChatResponse, ContextChatRequest
+from app.db.session import get_db
+from app.models.chat_db import ChatHistory
 
 router = APIRouter()
 
 # Initialize RAGService (can be improved with dependency injection for testing/lifecycle management)
 def get_rag_service():
     return RAGService(
-        openai_api_key=settings.OPENAI_API_KEY,
-        qdrant_host=settings.QDRANT_HOST,
+        google_api_key=settings.GOOGLE_API_KEY,
+        qdrant_url=settings.QDRANT_URL,
         qdrant_api_key=settings.QDRANT_API_KEY
     )
 

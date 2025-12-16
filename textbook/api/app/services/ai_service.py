@@ -1,41 +1,40 @@
-import openai
+import google.generativeai as genai
 from typing import Optional
 
 class AIService:
-    def __init__(self, openai_api_key: str):
-        # Initialize OpenAI client here, not using global openai.api_key
-        self.client = openai.OpenAI(api_key=openai_api_key)
+    def __init__(self, google_api_key: str):
+        genai.configure(api_key=google_api_key)
+        # Using gemini-2.5-flash as gemini-2.0-flash has quota issues
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
 
-    def personalize_content(self, content: str, software_experience: Optional[str], hardware_experience: Optional[str]) -> str:
-        prompt = (
-            f"Rewrite the following textbook content to be suitable for a user with "
-            f"software experience: '{software_experience or 'not specified'}' and "
-            f"hardware experience: '{hardware_experience or 'not specified'}'.\n\n"
-            f"Original Content:\n{content}\n\n"
-            f"Rewritten Content:"
-        )
-        response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo", # Using a chat model
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that rewrites content."},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=1000,
-        )
-        return response.choices[0].message.content.strip()
+    def personalize_content(self, content: str, software_background: Optional[str], hardware_background: Optional[str]) -> str:
+        try:
+            prompt = (
+                f"Rewrite the following textbook content to be suitable for a user with "
+                f"software background: '{software_background or 'not specified'}' and "
+                f"hardware background: '{hardware_background or 'not specified'}'.\n\n"
+                f"Original Content:\n{content}\n\n"
+                f"Rewritten Content:"
+            )
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            error_msg = str(e)
+            if "429" in error_msg or "quota" in error_msg.lower():
+                raise Exception("API quota exceeded. Please try again later or contact support.")
+            raise Exception(f"Failed to personalize content: {error_msg}")
 
     def translate_content(self, content: str, target_language: str) -> str:
-        prompt = (
-            f"Translate the following English textbook content to {target_language}.\n\n"
-            f"Original Content:\n{content}\n\n"
-            f"Translated Content:"
-        )
-        response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo", # Using a chat model
-            messages=[
-                {"role": "system", "content": f"You are a helpful assistant that translates content to {target_language}."},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=1000,
-        )
-        return response.choices[0].message.content.strip()
+        try:
+            prompt = (
+                f"Translate the following English textbook content to {target_language}.\n\n"
+                f"Original Content:\n{content}\n\n"
+                f"Translated Content:"
+            )
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            error_msg = str(e)
+            if "429" in error_msg or "quota" in error_msg.lower():
+                raise Exception("API quota exceeded. Please try again later or contact support.")
+            raise Exception(f"Failed to translate content: {error_msg}")

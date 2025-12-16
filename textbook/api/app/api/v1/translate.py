@@ -1,21 +1,21 @@
-from typing import Annotated # Import Annotated
+from typing import Annotated
 from fastapi import APIRouter, Depends
-from api.app.models.translate import TranslationRequest, TranslationResponse
-from api.app.services.ai_service import AIService
-from api.app.core.config import settings
-from api.app.core.security import get_current_user # To ensure user is authenticated
-from app.models.user_db import User # Import User ORM model
+from app.models.translate import TranslationRequest, TranslationResponse
+from app.services.ai_service import AIService
+from app.core.config import settings
+from app.core.security import get_current_user
+from app.models.user_db import User
 
 router = APIRouter()
 
 def get_ai_service():
-    return AIService(openai_api_key=settings.OPENAI_API_KEY)
+    return AIService(google_api_key=settings.GOOGLE_API_KEY)
 
 @router.post("/content", response_model=TranslationResponse)
 async def translate_content(
     request: TranslationRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
     ai_service: AIService = Depends(get_ai_service),
-    current_user: Annotated[User, Depends(get_current_user)] # Ensures user is logged in
 ):
     translated_text = ai_service.translate_content(
         content=request.content,

@@ -1,0 +1,53 @@
+.userStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userEmail {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ifm-navbar-link-color);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutButton {
+  background-color: transparent;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .userEmail {
+  color: var(--ifm-navbar-link-color);
+}
+
+[data-theme='dark'] .logoutButton {
+  border-color: var(--ifm-color-primary-light);
+  color: var(--ifm-color-primary-light);
+}
+
+[data-theme='dark'] .logoutButton:hover {
+  background-color: var(--ifm-color-primary-light);
+  color: var(--ifm-color-gray-900);
+}

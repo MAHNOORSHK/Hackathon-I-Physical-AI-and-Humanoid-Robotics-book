@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 
 class UserProfileCreate(BaseModel):
@@ -25,15 +25,11 @@ class TokenData(BaseModel):
 class UserProfileResponse(UserProfileCreate):
     id: int
     owner_id: int
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-
-class UserResponse(BaseModel): # Simplified from previous UserResponse
+class UserResponse(BaseModel):
     id: int
     email: EmailStr
     is_active: bool
     profile: Optional[UserProfileResponse] = None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

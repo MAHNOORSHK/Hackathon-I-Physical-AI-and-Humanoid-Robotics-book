@@ -6,8 +6,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from api.app.core.config import settings
-from api.app.schemas.user import TokenData
+from app.core.config import settings
+from app.schemas.user import TokenData
 
 # Configuration for password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,7 +17,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = settings.SECRET_KEY # settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM # settings.ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
@@ -49,6 +49,34 @@ async def get_current_user_email(token: str = Depends(oauth2_scheme)) -> str:
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    # In a real app, you would fetch the user from the database here
-    # and return the full UserProfile object
     return token_data.email
+
+
+# Import here to avoid circular imports
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.user_db import User
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    """Get the current authenticated user from database"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        raise credentials_exception
+    return user

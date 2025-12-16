@@ -42,7 +42,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-Textbook-GIAIC-Q4/tree/main/book/',
+            'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-book/tree/main/textbook/book/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -68,24 +68,25 @@ const config: Config = {
           label: 'Course',
         },
         {
-          href: 'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-Textbook-GIAIC-Q4',
+          href: 'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-book',
           label: 'GitHub',
           position: 'right',
         },
         {
-          to: '/chatbot',
-          label: 'Chatbot',
+          type: 'custom-userStatus',
           position: 'right',
         },
         {
           to: '/login',
           label: 'Login',
           position: 'right',
+          className: 'navbar-login-link',
         },
         {
           to: '/signup',
           label: 'Signup',
           position: 'right',
+          className: 'navbar-signup-link',
         },
       ],
     },
@@ -102,33 +103,33 @@ const config: Config = {
           ],
         },
         {
-          title: 'Community',
+          title: 'Connect With Me',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'GitHub',
+              href: 'https://github.com/MAHNOORSHK',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'LinkedIn',
+              href: 'https://linkedin.com/in/mahnoor-shaikh',
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              href: 'https://twitter.com/Mahnoor16081999',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'Resources',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-Textbook-GIAIC-Q4',
+              label: 'Project Repository',
+              href: 'https://github.com/MAHNOORSHK/Hackathon-I-Physical-AI-and-Humanoid-Robotics-book',
             },
           ],
         },
       ],
-      copyright: `Copyright © 2025 Build by Mahnoor Sunday 2pm to 5 pm students.`,
+      copyright: `Copyright © 2025 Built by Mahnoor Sheikh | Sunday 2pm to 5pm Batch`,
     },
     prism: {
       theme: prismThemes.github,

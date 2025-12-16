@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.core.security import create_access_token, verify_password, get_password_hash, get_current_user # Changed get_current_user_email to get_current_user
-from app.schemas.user import UserCreate, UserLogin, Token, UserProfileResponse as UserProfile, UserProfileCreate, UserResponse # Added UserResponse
+from app.core.security import create_access_token, verify_password, get_password_hash, get_current_user
+from app.schemas.user import UserCreate, UserLogin, Token, UserProfileResponse, UserProfileCreate, UserResponse
 from app.core.config import settings
 from app.db.session import get_db
-from app.models.user_db import User, UserProfile # Import the new ORM User and UserProfile models
+from app.models.user_db import User, UserProfile as UserProfileDB
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ async def register_user(user_data: UserCreate, db: Annotated[Session, Depends(ge
     db.refresh(db_user) # Refresh to get the generated user ID
 
     # Create UserProfile
-    db_profile = UserProfile(
+    db_profile = UserProfileDB(
         owner_id=db_user.id,
         software_background=user_data.software_background,
         hardware_background=user_data.hardware_background
@@ -51,7 +51,7 @@ async def register_user(user_data: UserCreate, db: Annotated[Session, Depends(ge
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Annotated[Session, Depends(get_db)]):
+async def login_for_access_token(db: Annotated[Session, Depends(get_db)], form_data: OAuth2PasswordRequestForm = Depends()):
     db_user = db.query(User).filter(User.email == form_data.username).first()
     
     if not db_user or not verify_password(form_data.password, db_user.hashed_password):
@@ -75,7 +75,7 @@ async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]
     # Construct UserResponse from ORM User and its associated Profile
     user_profile_response = None
     if current_user.profile:
-        user_profile_response = UserProfile(
+        user_profile_response = UserProfileResponse(
             id=current_user.profile.id,
             owner_id=current_user.profile.owner_id,
             software_background=current_user.profile.software_background,
