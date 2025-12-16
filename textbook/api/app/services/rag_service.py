@@ -5,7 +5,7 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 class RAGService:
     def __init__(self, google_api_key: str, qdrant_url: str, qdrant_api_key: str):
         genai.configure(api_key=google_api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        self.model = genai.GenerativeModel('gemini-pro')
         self.qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         self.collection_name = "textbook_content"
 

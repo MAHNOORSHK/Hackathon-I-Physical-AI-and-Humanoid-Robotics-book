@@ -4,8 +4,8 @@ from typing import Optional
 class AIService:
     def __init__(self, google_api_key: str):
         genai.configure(api_key=google_api_key)
-        # Using gemini-2.5-flash as gemini-2.0-flash has quota issues
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        # Using gemini-pro model
+        self.model = genai.GenerativeModel('gemini-pro')
 
     def personalize_content(self, content: str, software_background: Optional[str], hardware_background: Optional[str]) -> str:
         try:

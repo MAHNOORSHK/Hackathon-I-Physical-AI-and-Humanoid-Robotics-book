@@ -1,11 +1,11 @@
 import os
-import openai
+import google.generativeai as genai
 from qdrant_client import QdrantClient, models
 from langchain_text_splitters import MarkdownTextSplitter
 
 class IngestionService:
-    def __init__(self, openai_api_key: str, qdrant_url: str, qdrant_api_key: str):
-        self.openai_client = openai.OpenAI(api_key=openai_api_key)
+    def __init__(self, google_api_key: str, qdrant_url: str, qdrant_api_key: str):
+        genai.configure(api_key=google_api_key)
         self.qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         self.collection_name = "textbook_content"
         self.text_splitter = MarkdownTextSplitter(chunk_size=1000, chunk_overlap=100)
@@ -18,9 +18,19 @@ class IngestionService:
                     markdown_files.append(os.path.join(root, file))
         return markdown_files
 
-    def _get_embeddings(self, texts: list[str], model="text-embedding-ada-002") -> list[list[float]]:
-        response = self.openai_client.embeddings.create(input=texts, model=model)
-        return [embedding.embedding for embedding in response.data]
+    def _get_embedding(self, text: str) -> list[float]:
+        result = genai.embed_content(
+            model="models/text-embedding-004",
+            content=text,
+            task_type="retrieval_document"
+        )
+        return result['embedding']
+
+    def _get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
+        embeddings = []
+        for text in texts:
+            embeddings.append(self._get_embedding(text))
+        return embeddings
 
     def ingest_book_content(self, book_path: str):
         docs_path = os.path.join(book_path, "docs")
@@ -35,21 +45,24 @@ class IngestionService:
         # 2. Chunk the text
         chunks = self.text_splitter.split_text(all_text)
 
-        # 3. Create Qdrant collection if it doesn't exist
+        # 3. Recreate Qdrant collection (to ensure correct dimensions)
+        # Google text-embedding-004 produces 768 dimensions
         try:
-            self.qdrant_client.get_collection(collection_name=self.collection_name)
+            self.qdrant_client.delete_collection(collection_name=self.collection_name)
         except Exception:
-            self.qdrant_client.recreate_collection(
-                collection_name=self.collection_name,
-                vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE),
-            )
+            pass  # Collection may not exist
+
+        self.qdrant_client.create_collection(
+            collection_name=self.collection_name,
+            vectors_config=models.VectorParams(size=768, distance=models.Distance.COSINE),
+        )
 
         # 4. Generate embeddings and upsert into Qdrant
-        batch_size = 32
+        batch_size = 10  # Smaller batch for API rate limits
         for i in range(0, len(chunks), batch_size):
             batch_chunks = chunks[i:i+batch_size]
-            embeddings = self._get_embeddings(batch_chunks)
-            
+            embeddings = self._get_embeddings_batch(batch_chunks)
+
             self.qdrant_client.upsert(
                 collection_name=self.collection_name,
                 points=models.Batch(
@@ -59,5 +72,5 @@ class IngestionService:
                 ),
                 wait=True
             )
-        
+
         print(f"Successfully ingested {len(chunks)} chunks into Qdrant collection '{self.collection_name}'.")

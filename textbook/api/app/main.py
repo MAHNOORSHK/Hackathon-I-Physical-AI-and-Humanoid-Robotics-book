@@ -45,7 +45,7 @@ app.include_router(reading.router, prefix="/api/v1/reading", tags=["reading"])
 
 def get_ingestion_service():
     return IngestionService(
-        openai_api_key=settings.OPENAI_API_KEY,
+        google_api_key=settings.GOOGLE_API_KEY,
         qdrant_url=settings.QDRANT_URL,
         qdrant_api_key=settings.QDRANT_API_KEY
     )
