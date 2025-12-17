@@ -9,7 +9,7 @@ from app.models.user_db import User
 router = APIRouter()
 
 def get_ai_service():
-    return AIService(google_api_key=settings.GOOGLE_API_KEY)
+    return AIService(groq_api_key=settings.GROQ_API_KEY)
 
 @router.post("/content", response_model=TranslationResponse)
 async def translate_content(

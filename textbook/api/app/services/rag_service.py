@@ -1,11 +1,16 @@
-import google.generativeai as genai
+from groq import Groq
 from qdrant_client import QdrantClient
 from qdrant_client.http.exceptions import UnexpectedResponse
+import google.generativeai as genai
 
 class RAGService:
-    def __init__(self, google_api_key: str, qdrant_url: str, qdrant_api_key: str):
+    def __init__(self, groq_api_key: str, google_api_key: str, qdrant_url: str, qdrant_api_key: str):
+        # Groq for chat (free, high limits)
+        self.groq_client = Groq(api_key=groq_api_key)
+
+        # Google for embeddings only
         genai.configure(api_key=google_api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+
         self.qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         self.collection_name = "textbook_content"
 
@@ -64,17 +69,31 @@ class RAGService:
             # 3. Build prompt for LLM
             prompt = self._build_prompt(text, relevant_documents)
 
-            # 4. Use Gemini to generate a response
-            response = self.model.generate_content(prompt)
-            return response.text
+            # 4. Use Groq to generate a response (free, high limits)
+            response = self.groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=1024
+            )
+            return response.choices[0].message.content
         except Exception as e:
-            return f"Sorry, I encountered an error processing your request: {str(e)}"
+            error_msg = str(e)
+            print(f"DEBUG ERROR: {error_msg}")
+            return f"Error: {error_msg}"
 
     def query_with_context(self, text: str, context: str) -> str:
         try:
             relevant_documents = [context]
             prompt = self._build_prompt(text, relevant_documents)
-            response = self.model.generate_content(prompt)
-            return response.text
+
+            # Use Groq for response
+            response = self.groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=1024
+            )
+            return response.choices[0].message.content
         except Exception as e:
             return f"Sorry, I encountered an error processing your request: {str(e)}"

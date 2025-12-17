@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # Google Gemini settings
     GOOGLE_API_KEY: str = ""
 
+    # Groq settings (for chatbot)
+    GROQ_API_KEY: str = ""
+
     # Auth settings
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # 30 minutes
     SECRET_KEY: str = "a-super-secret-key-change-in-production"

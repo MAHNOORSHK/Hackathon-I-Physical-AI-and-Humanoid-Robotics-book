@@ -11,6 +11,7 @@ router = APIRouter()
 # Initialize RAGService (can be improved with dependency injection for testing/lifecycle management)
 def get_rag_service():
     return RAGService(
+        groq_api_key=settings.GROQ_API_KEY,
         google_api_key=settings.GOOGLE_API_KEY,
         qdrant_url=settings.QDRANT_URL,
         qdrant_api_key=settings.QDRANT_API_KEY
